@@ -1,8 +1,8 @@
 import time
+import webbrowser
 import speech_recognition as sr
 from gtts import gTTS
 from pygame import mixer
-
 
 def say(text):
     tts = gTTS(text=text, lang='en')
@@ -15,7 +15,6 @@ def say(text):
     while mixer.music.get_busy():
         time.sleep(0.1)
 
-
 def takeCommand():
     r = sr.Recognizer()
     with sr.Microphone() as source:
@@ -23,22 +22,21 @@ def takeCommand():
             print("Listening...")
             audio = r.listen(source)
             print("Recognizing...")
-            query = r.recognize_google(audio, language="en-in")
-            print(f"User said: {query}")
-            return query
-        except KeyboardInterrupt:
-            print("Keyboard interrupt detected. Exiting...")
-            exit()
-        except sr.UnknownValueError:
-            print("Unable to recognize speech. Please try again.")
-            return ""
+            user_query = r.recognize_google(audio, language="en-in")
+            print(f"User said: {user_query}")
+            return user_query
+        except Exception as e:
+            return "Please speak clearly."
 
+say("Hello, I am not a robot. I am your personal assistant.")
 
+while True:
+    text = takeCommand()
+    # say(text)
 
-say("Hello, I am not a robot I am RASS A.I.")
+    sites = [["youtube", "https://www.youtube.com"], ["wikipedia", "https://www.wikipedia.org"], ["google", "https://www.google.com"]]
 
-print("Listening...")
-text = takeCommand()
-say(text)
-
-
+    for site in sites:
+        if f"open {site[0]}".lower() in text.lower():
+            say(f"Opening {site[0]}, sir....")
+            webbrowser.open(site[1])
